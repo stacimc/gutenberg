@@ -48,7 +48,6 @@ export function SocialLinksEdit( props ) {
 			</InspectorControls>
 			<InnerBlocks
 				allowedBlocks={ ALLOWED_BLOCKS }
-				templateLock={ false }
 				template={ TEMPLATE }
 				orientation="horizontal"
 				__experimentalTagName="ul"
