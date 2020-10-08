@@ -27,7 +27,7 @@ export default function save( { attributes } ) {
 				imageCrop ? 'is-cropped' : ''
 			}` }
 		>
-			<ul { ...useBlockProps.save() }>
+			<ul>
 				<InnerBlocks.Content />
 			</ul>
 			{ ! RichText.isEmpty( caption ) && (
