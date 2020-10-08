@@ -2,6 +2,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { last } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -12,10 +13,7 @@ import {
 	getBlockType,
 } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
-import { VisuallyHidden } from '@wordpress/components';
-
-import { last } from 'lodash';
-import { Dropdown, Button } from '@wordpress/components';
+import { Dropdown, Button, VisuallyHidden } from '@wordpress/components';
 import { chevronDown } from '@wordpress/icons';
 import { useRef } from '@wordpress/element';
 
@@ -103,8 +101,11 @@ export default function DocumentActions( { template } ) {
 		>
 			{ documentTitle ? (
 				<>
-					<div ref={ titleRef }>
-						<h1 className="edit-site-document-actions__title-wrapper">
+					<div
+						ref={ titleRef }
+						className="edit-site-document-actions__title-wrapper"
+					>
+						<h1>
 							<VisuallyHidden>
 								{ __( 'Edit template:' ) }
 							</VisuallyHidden>
@@ -120,10 +121,11 @@ export default function DocumentActions( { template } ) {
 								{ documentTitle }
 							</div>
 						</h1>
-
 						{ ! isActive && (
 							<Dropdown
-								popoverProps={ { anchorRef: titleRef.current } }
+								popoverProps={ {
+									anchorRef: titleRef.current,
+								} }
 								position="bottom center"
 								renderToggle={ ( { isOpen, onToggle } ) => (
 									<Button
@@ -141,6 +143,7 @@ export default function DocumentActions( { template } ) {
 							/>
 						) }
 					</div>
+
 					<div
 						className={ classnames(
 							'edit-site-document-actions__secondary-item',
