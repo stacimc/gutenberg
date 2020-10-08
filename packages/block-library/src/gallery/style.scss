@@ -7,7 +7,7 @@
 		// Some themes give all <ul> default margin instead of padding.
 		margin: 0;
 
-		li.wp-block-gallery__image {
+		li.wp-block-image {
 			// Add space between thumbnails, and unset right most thumbnails later.
 			margin: 0 $grid-unit-20 $grid-unit-20 0;
 			display: flex;
@@ -74,7 +74,7 @@
 
 
 	// Cropped
-	&.is-cropped ul.block-editor-block-list__layout li.wp-block-gallery__image {
+	&.is-cropped ul.block-editor-block-list__layout li.wp-block-image {
 		a,
 		img {
 			// IE11 doesn't support object-fit, so just make sure images aren't skewed.
@@ -91,7 +91,7 @@
 	}
 
 	// On mobile and responsive viewports, we allow only 1 or 2 columns at the most.
-	& .wp-block-gallery__image {
+	& .wp-block-image {
 		width: calc( 50% - #{$grid-unit-20} );
 
 		&:nth-of-type( even ) {
@@ -99,7 +99,7 @@
 		}
 	}
 
-	&.columns-1 .wp-block-gallery__image {
+	&.columns-1 .wp-block-image {
 		width: 100%;
 		margin-right: 0;
 	}
@@ -107,7 +107,7 @@
 	// Beyond mobile viewports, we allow up to 8 columns.
 	@include break-small {
 		@for $i from 3 through 8 {
-			&.columns-#{ $i } .wp-block-gallery__image {
+			&.columns-#{ $i } .wp-block-image {
 				width: calc(
 					#{100% / $i} - #{$grid-unit-20 * ( $i - 1 ) / $i}
 				);
@@ -120,14 +120,14 @@
 			&.columns-#{
 				$column-count
 				}
-				.wp-block-gallery__image:nth-of-type( #{ $column-count }n ) {
+				.wp-block-image:nth-of-type( #{ $column-count }n ) {
 				margin-right: 0;
 			}
 		}
 	}
 
 	// Last item always needs margins reset.
-	.wp-block-gallery__image:last-child {
+	.wp-block-image:last-child {
 		margin-right: 0;
 	}
 
@@ -140,7 +140,7 @@
 
 	// If the gallery is centered, center the content inside as well.
 	&.aligncenter {
-		figure.wp-block-gallery__image {
+		figure.wp-block-image {
 			justify-content: center;
 		}
 	}
