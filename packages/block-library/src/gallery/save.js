@@ -1,24 +1,25 @@
 /**
  * WordPress dependencies
  */
-import { RichText, InnerBlocks, useBlockProps } from '@wordpress/block-editor';
+import { RichText, InnerBlocks } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
  */
 import { defaultColumnsNumber } from './shared';
-import {
-	LINK_DESTINATION_ATTACHMENT,
-	LINK_DESTINATION_MEDIA,
-} from './constants';
+
+// Need to add work out best way to pass this to child images.
+// import {
+// 	LINK_DESTINATION_ATTACHMENT,
+// 	LINK_DESTINATION_MEDIA,
+// } from './constants';
 
 export default function save( { attributes } ) {
 	const {
-		images,
 		columns = defaultColumnsNumber( attributes ),
 		imageCrop,
 		caption,
-		linkTo,
+		// linkTo, // Needs to be passed down to children.
 	} = attributes;
 
 	return (
