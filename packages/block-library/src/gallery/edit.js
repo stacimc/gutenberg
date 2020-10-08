@@ -4,7 +4,6 @@
 import {
 	every,
 	filter,
-	find,
 	forEach,
 	get,
 	isEmpty,
@@ -29,14 +28,15 @@ import { MediaPlaceholder, InspectorControls } from '@wordpress/block-editor';
 import { Component, Platform } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { getBlobByURL, isBlobURL, revokeBlobURL } from '@wordpress/blob';
-import { withSelect } from '@wordpress/data';
+import { withSelect, withDispatch } from '@wordpress/data';
 import { withViewportMatch } from '@wordpress/viewport';
+import { createBlock } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
  */
 import { sharedIcon } from './shared-icon';
-import { defaultColumnsNumber, pickRelevantMediaFiles } from './shared';
+import { defaultColumnsNumber } from './shared';
 import Gallery from './gallery';
 import {
 	LINK_DESTINATION_ATTACHMENT,
@@ -68,20 +68,13 @@ class GalleryEdit extends Component {
 	constructor() {
 		super( ...arguments );
 
-		this.onSelectImage = this.onSelectImage.bind( this );
 		this.onSelectImages = this.onSelectImages.bind( this );
-		this.onDeselectImage = this.onDeselectImage.bind( this );
 		this.setLinkTo = this.setLinkTo.bind( this );
 		this.setColumnsNumber = this.setColumnsNumber.bind( this );
 		this.toggleImageCrop = this.toggleImageCrop.bind( this );
-		this.onMove = this.onMove.bind( this );
-		this.onMoveForward = this.onMoveForward.bind( this );
-		this.onMoveBackward = this.onMoveBackward.bind( this );
 		this.onRemoveImage = this.onRemoveImage.bind( this );
 		this.onUploadError = this.onUploadError.bind( this );
-		this.setImageAttributes = this.setImageAttributes.bind( this );
 		this.setAttributes = this.setAttributes.bind( this );
-		this.onFocusGalleryCaption = this.onFocusGalleryCaption.bind( this );
 		this.getImagesSizeOptions = this.getImagesSizeOptions.bind( this );
 		this.updateImagesSize = this.updateImagesSize.bind( this );
 
@@ -92,68 +85,7 @@ class GalleryEdit extends Component {
 	}
 
 	setAttributes( attributes ) {
-		if ( attributes.ids ) {
-			throw new Error(
-				'The "ids" attribute should not be changed directly. It is managed automatically when "images" attribute changes'
-			);
-		}
-
-		if ( attributes.images ) {
-			attributes = {
-				...attributes,
-				// Unlike images[ n ].id which is a string, always ensure the
-				// ids array contains numbers as per its attribute type.
-				ids: map( attributes.images, ( { id } ) => parseInt( id, 10 ) ),
-			};
-		}
-
 		this.props.setAttributes( attributes );
-	}
-
-	onSelectImage( index ) {
-		return () => {
-			if ( this.state.selectedImage !== index ) {
-				this.setState( {
-					selectedImage: index,
-				} );
-			}
-		};
-	}
-
-	onDeselectImage( index ) {
-		return () => {
-			if ( this.state.selectedImage === index ) {
-				this.setState( {
-					selectedImage: null,
-				} );
-			}
-		};
-	}
-
-	onMove( oldIndex, newIndex ) {
-		const images = [ ...this.props.attributes.images ];
-		images.splice( newIndex, 1, this.props.attributes.images[ oldIndex ] );
-		images.splice( oldIndex, 1, this.props.attributes.images[ newIndex ] );
-		this.setState( { selectedImage: newIndex } );
-		this.setAttributes( { images } );
-	}
-
-	onMoveForward( oldIndex ) {
-		return () => {
-			if ( oldIndex === this.props.attributes.images.length - 1 ) {
-				return;
-			}
-			this.onMove( oldIndex, oldIndex + 1 );
-		};
-	}
-
-	onMoveBackward( oldIndex ) {
-		return () => {
-			if ( oldIndex === 0 ) {
-				return;
-			}
-			this.onMove( oldIndex, oldIndex - 1 );
-		};
 	}
 
 	onRemoveImage( index ) {
@@ -171,59 +103,25 @@ class GalleryEdit extends Component {
 		};
 	}
 
-	selectCaption( newImage, images, attachmentCaptions ) {
-		// The image id in both the images and attachmentCaptions arrays is a
-		// string, so ensure comparison works correctly by converting the
-		// newImage.id to a string.
-		const newImageId = toString( newImage.id );
-		const currentImage = find( images, { id: newImageId } );
-
-		const currentImageCaption = currentImage
-			? currentImage.caption
-			: newImage.caption;
-
-		if ( ! attachmentCaptions ) {
-			return currentImageCaption;
-		}
-
-		const attachment = find( attachmentCaptions, {
-			id: newImageId,
-		} );
-
-		// if the attachment caption is updated
-		if ( attachment && attachment.caption !== newImage.caption ) {
-			return newImage.caption;
-		}
-
-		return currentImageCaption;
-	}
-
 	onSelectImages( newImages ) {
-		const { columns, images, sizeSlug } = this.props.attributes;
-		const { attachmentCaptions } = this.state;
-		this.setState( {
-			attachmentCaptions: newImages.map( ( newImage ) => ( {
-				// Store the attachmentCaption id as a string for consistency
-				// with the type of the id in the images attribute.
-				id: toString( newImage.id ),
-				caption: newImage.caption,
-			} ) ),
+		const { clientId, replaceInnerBlocks } = this.props;
+		const { columns, linkTo } = this.props.attributes;
+
+		const newBlocks = newImages.map( ( image ) => {
+			return createBlock( 'core/image', {
+				id: image.id,
+				caption: image.caption,
+				url: image.url,
+				link: image.link,
+				linkDestination: linkTo,
+				alt: image.alt,
+			} );
 		} );
 		this.setAttributes( {
-			images: newImages.map( ( newImage ) => ( {
-				...pickRelevantMediaFiles( newImage, sizeSlug ),
-				caption: this.selectCaption(
-					newImage,
-					images,
-					attachmentCaptions
-				),
-				// The id value is stored in a data attribute, so when the
-				// block is parsed it's converted to a string. Converting
-				// to a string here ensures it's type is consistent.
-				id: toString( newImage.id ),
-			} ) ),
+			ids: newImages.map( ( newImage ) => toString( newImage.id ) ),
 			columns: columns ? Math.min( newImages.length, columns ) : columns,
 		} );
+		replaceInnerBlocks( clientId, newBlocks );
 	}
 
 	onUploadError( message ) {
@@ -248,32 +146,6 @@ class GalleryEdit extends Component {
 		return checked
 			? __( 'Thumbnails are cropped to align.' )
 			: __( 'Thumbnails are not cropped.' );
-	}
-
-	onFocusGalleryCaption() {
-		this.setState( {
-			selectedImage: null,
-		} );
-	}
-
-	setImageAttributes( index, attributes ) {
-		const {
-			attributes: { images },
-		} = this.props;
-		const { setAttributes } = this;
-		if ( ! images[ index ] ) {
-			return;
-		}
-		setAttributes( {
-			images: [
-				...images.slice( 0, index ),
-				{
-					...images[ index ],
-					...attributes,
-				},
-				...images.slice( index + 1 ),
-			],
-		} );
 	}
 
 	getImagesSizeOptions() {
@@ -360,9 +232,10 @@ class GalleryEdit extends Component {
 			images,
 			linkTo,
 			sizeSlug,
+			ids,
 		} = attributes;
 
-		const hasImages = !! images.length;
+		const hasImages = !! ids.length;
 
 		const mediaPlaceholder = (
 			<MediaPlaceholder
@@ -398,13 +271,13 @@ class GalleryEdit extends Component {
 			<>
 				<InspectorControls>
 					<PanelBody title={ __( 'Gallery settings' ) }>
-						{ images.length > 1 && (
+						{ ids.length > 1 && (
 							<RangeControl
 								label={ __( 'Columns' ) }
 								value={ columns }
 								onChange={ this.setColumnsNumber }
 								min={ 1 }
-								max={ Math.min( MAX_COLUMNS, images.length ) }
+								max={ Math.min( MAX_COLUMNS, ids.length ) }
 								{ ...MOBILE_CONTROL_PROPS_RANGE_CONTROL }
 								required
 							/>
@@ -504,4 +377,10 @@ export default compose( [
 	} ),
 	withNotices,
 	withViewportMatch( { isNarrow: '< small' } ),
+	withDispatch( ( dispatch ) => {
+		const { replaceInnerBlocks } = dispatch( 'core/block-editor' );
+		return {
+			replaceInnerBlocks,
+		};
+	} ),
 ] )( GalleryEdit );
