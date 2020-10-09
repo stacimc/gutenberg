@@ -69,7 +69,6 @@ function Items( {
 			hasMultiSelection,
 			getGlobalBlockCount,
 			isTyping,
-			isDraggingBlocks,
 		} = select( 'core/block-editor' );
 
 		return {
@@ -81,7 +80,6 @@ function Items( {
 			enableAnimation:
 				! isTyping() &&
 				getGlobalBlockCount() <= BLOCK_ANIMATION_THRESHOLD,
-			isDraggingBlocks: isDraggingBlocks(),
 		};
 	}
 
@@ -92,7 +90,6 @@ function Items( {
 		orientation,
 		hasMultiSelection,
 		enableAnimation,
-		isDraggingBlocks,
 	} = useSelect( selector, [ rootClientId ] );
 
 	const dropTargetIndex = useBlockDropZone( {
@@ -100,8 +97,7 @@ function Items( {
 		rootClientId,
 	} );
 
-	const isAppenderDropTarget =
-		dropTargetIndex === blockClientIds.length && isDraggingBlocks;
+	const isAppenderDropTarget = dropTargetIndex === blockClientIds.length;
 
 	return (
 		<>
@@ -110,8 +106,7 @@ function Items( {
 					? multiSelectedBlockClientIds.includes( clientId )
 					: selectedBlockClientId === clientId;
 
-				const isDropTarget =
-					dropTargetIndex === index && isDraggingBlocks;
+				const isDropTarget = dropTargetIndex === index;
 
 				return (
 					<AsyncModeProvider
