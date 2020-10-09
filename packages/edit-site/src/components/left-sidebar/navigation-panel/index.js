@@ -17,7 +17,7 @@ import { __ } from '@wordpress/i18n';
  */
 import TemplatesMenu from './menus/templates';
 import TemplatePartsMenu from './menus/template-parts';
-import PageSwitcher from './page-switcher';
+import ContentMenu from './menus/content';
 
 export const {
 	Fill: NavigationPanelPreviewFill,
@@ -99,11 +99,16 @@ const NavigationPanel = () => {
 						navigateToMenu="template-parts"
 					/>
 
+					<NavigationItem
+						title={ __( 'Content' ) }
+						navigateToMenu="content"
+					/>
+
 					<TemplatesMenu onActivateItem={ setTemplate } />
 
 					<TemplatePartsMenu onActivateItem={ setTemplatePart } />
 
-					<PageSwitcher onChangePage={ setPage } />
+					<ContentMenu onChangePage={ setPage } />
 				</NavigationMenu>
 			</Navigation>
 
