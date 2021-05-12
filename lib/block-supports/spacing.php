@@ -35,6 +35,10 @@ function gutenberg_register_spacing_support( $block_type ) {
  * @return array Block spacing CSS classes and inline styles.
  */
 function gutenberg_apply_spacing_support( $block_type, $block_attributes ) {
+	if ( gutenberg_skip_spacing_serialization ( $block_type ) ) {
+		return array();
+	}
+
 	$has_padding_support = gutenberg_has_spacing_feature_support( $block_type, 'padding' );
 	$has_margin_support  = gutenberg_has_spacing_feature_support( $block_type, 'margin' );
 	$styles              = array();
@@ -73,6 +77,21 @@ function gutenberg_has_spacing_feature_support( $block_type, $feature, $default 
 	// Check if the specific feature has been opted into individually
 	// via nested flag under `spacing`.
 	return gutenberg_block_has_support( $block_type, array( 'spacing', $feature ), $default );
+}
+
+/**
+ * Checks whether serialization of the current block's padding should occur.
+ *
+ * @param WP_Block_Type $block_type       Block Type.
+ *
+ * @return boolean
+ */
+function gutenberg_skip_spacing_serialization( $block_type ) {
+	$spacing_support = _wp_array_get( $block_type->supports, array( 'spacing' ), false );
+
+	return is_array( $spacing_support ) &&
+		array_key_exists( '__experimentalSkipSerialization', $spacing_support ) &&
+		$spacing_support[ '__experimentalSkipSerialization' ];
 }
 
 // Register the block support.
