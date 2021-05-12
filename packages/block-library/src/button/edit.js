@@ -24,6 +24,7 @@ import {
 	RichText,
 	useBlockProps,
 	__experimentalUseColorProps as useColorProps,
+	__experimentalUseSpacingProps as useSpacingProps,
 	__experimentalLinkControl as LinkControl,
 } from '@wordpress/block-editor';
 import { rawShortcut, displayShortcut } from '@wordpress/keycodes';
@@ -194,6 +195,7 @@ function ButtonEdit( props ) {
 
 	const borderRadius = style?.border?.radius;
 	const colorProps = useColorProps( attributes );
+	const spacingProps = useSpacingProps( attributes );
 	const ref = useRef();
 	const blockProps = useBlockProps( { ref } );
 
@@ -225,6 +227,7 @@ function ButtonEdit( props ) {
 							? borderRadius + 'px'
 							: undefined,
 						...colorProps.style,
+						...spacingProps.style,
 					} }
 					onSplit={ ( value ) =>
 						createBlock( 'core/button', {
