@@ -170,7 +170,6 @@ function classnames_for_block_core_search( $attributes ) {
  * @return array Style HTML attribute.
  */
 function styles_for_block_core_search( $attributes ) {
-	$shared_styles  = array();
 	$wrapper_styles = array();
 	$button_styles  = array();
 	$input_styles   = array();
@@ -234,6 +233,13 @@ function styles_for_block_core_search( $attributes ) {
 	);
 }
 
+/**
+ * Returns color classnames depending on whether there are named or custom border colors.
+ *
+ * @param array $attributes The block attributes.
+ *
+ * @return string The color classnames to be applied to the block elements.
+ */
 function get_color_classes_for_block_core_search( $attributes ) {
 	$classnames = array();
 
@@ -241,7 +247,7 @@ function get_color_classes_for_block_core_search( $attributes ) {
 	$has_custom_text_color = ! empty( $attributes['style']['color']['text'] );
 	if ( ! empty( $attributes['textColor'] ) ) {
 		$classnames[] = sprintf( 'has-text-color has-%s-color', $attributes['textColor'] );
-	} elseif( $has_custom_text_color ) {
+	} elseif ( $has_custom_text_color ) {
 		// If there's no 'textColor' text string but there is a custom text color style, still add the generic `has-text-color` class.
 		$classnames[] = 'has-text-color';
 	}
