@@ -218,10 +218,10 @@ function styles_for_block_core_search( $attributes ) {
 	$has_colors = ! empty( $attributes['style']['color'] );
 
 	if ( $has_colors ) {
-		if ( $attributes['style']['color']['text'] ) {
+		if ( ! empty( $attributes['style']['color']['text'] ) ) {
 			$button_styles[] = sprintf( 'color: %s;', esc_attr( $attributes['style']['color']['text'] ) );
 		}
-		if ( $attributes['style']['color']['background'] ) {
+		if ( ! empty( $attributes['style']['color']['background'] ) ) {
 			$button_styles[] = sprintf( 'background-color: %s;', esc_attr( $attributes['style']['color']['background'] ) );
 		}
 	}
