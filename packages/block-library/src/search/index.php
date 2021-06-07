@@ -193,7 +193,7 @@ function styles_for_block_core_search( $attributes ) {
 		// Shared style for button and input radius values.
 		$border_radius   = $attributes['style']['border']['radius'];
 		$border_radius   = is_numeric( $border_radius ) ? $border_radius . 'px' : $border_radius;
-		$button_styles[] = sprintf( 'border-radius: %spx;', esc_attr( $border_radius ) );
+		$button_styles[] = sprintf( 'border-radius: %s;', esc_attr( $border_radius ) );
 
 		// Apply wrapper border radius if button placed inside.
 		$button_inside = ! empty( $attributes['buttonPosition'] ) &&
